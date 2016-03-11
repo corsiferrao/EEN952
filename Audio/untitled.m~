@@ -23,27 +23,44 @@ audio_in.time = t;
 audio_in.signals.values = YL;
 audio_in.signals.dimensins = size(YL,1);
 
-%% roda simulink
-ruido;
-
+%%
+ruido
 
 %%
 y_out = audio_out.data;
+y_out_filtrado = audio_out_filtrado.data;
 
 %%
 player = audioplayer(y_out,FS);
 play(player);
 
-%% grava em arquivo
-audiowrite('AutumnLeaves_ruido.wav',y_out,FS)
-
-
-%%
-L    = size(y_out,1);        % Length of signal
+%% ÁUDIO não filtrado
+L    = size(y_out,1);            % Length of signal
 NFFT = 2^nextpow2(L);            % Next power of 2 from length of y
-Yfft = fft(y_out,NFFT)/L;               % Calcula FFT
+Yfft = fft(y_out,NFFT)/L;        % Calcula FFT
+f = FS/2*linspace(0,1,NFFT/2+1); % Ajusta frequencia
+
+stem(f,2*abs(Yfft(1:NFFT/2+1)))  % plota resutltado
+%title(['Fourier Audio - ' name]);
+xlabel('Hz'); ylabel('|A|');
+
+
+%% ÁUDIO  filtrado High pass filter
+figure;
+clear L;
+L    = size(y_out_filtrado,1);        % Length of signal
+NFFT = 2^nextpow2(L);            % Next power of 2 from length of y
+Yfft = fft(y_out_filtrado,NFFT)/L;               % Calcula FFT
 f = FS/2*linspace(0,1,NFFT/2+1); % Ajusta frequencia
 
 stem(f,2*abs(Yfft(1:NFFT/2+1)))     % plota resutltado
 %title(['Fourier Audio - ' name]);
 xlabel('Hz'); ylabel('|A|');
+
+%% filtrado
+
+plot(y_out_filtrado)
+%%
+
+player_filtrado = audioplayer(y_out_filtrado,FS);
+play(player_filtrado);
