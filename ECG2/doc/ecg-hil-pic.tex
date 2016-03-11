@@ -1,0 +1,145 @@
+\documentclass[11pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[english,brazil,brazilian]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}	
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{todonotes}
+
+\newcommand{\unit}[1]{\ensuremath{\, \mathrm{#1}}}
+
+\title{Processamento Digital de Sinais\\ Eletrocardiograma + HIL}
+\author{Rafael Corsi}
+
+
+\begin{document}
+\maketitle
+
+\section{ECG}
+
+Eletrocardiograma (ECG ou EKG) é o histórico das atividades elétricas do corpo (coração) amostradas através de eletrodos na superfície do corpo. Esses dados são utilizados para extração de informações uteis na analise clinica do paciente. Intervalo de tempo entre pulsos, suas formas e orientações (Fig. \ref{fig:parametros:ecg}) representam fenômenos fisiológicos que ocorrem no coração e nos sistemas nervosos.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.5\textwidth]{figs/ecg.png}
+\caption{Parâmetros de um ECG}
+\label{fig:parametros:ecg}
+\end{figure}
+
+Devido a baixa relação sinal/ruido, interferências de outros sinais (movimentos do paciente, eletrônica entre outros) uma das etapas mais importantes do sistema é a filtragem do sinal. 
+
+\section{HIL}
+
+Hardware-in-the loop (HIL) é um técnica de simulação em tempo real (onde a taxa de amostragem é respeitada) capaz de simular sistemas dinâmicos e suas interfaces externas, simulando assim uma planta real. Muito utilizado para prototipagem de sistemas de controle onde o acesso ao sistema real não é possível (ex. planta nuclear, satélites \ldots) ou em estágios iniciais do desenvolvimento. 
+
+Um HIL pode ser desenvolvido utilizando o software \textit{Simulink} em conjunto com a placa de aquisição DAQ 6251 (\textit{Data Acquisition}) (Elvis).
+
+\section{Desafio}
+
+Projetar uma eletrônica embarcada que colete os dados de um ECG (rodando no HIL), filtre o sinal e detecte a frequência cardíaca do paciente. O Software deve também filtrar o sinal para uma melhor interpretação do exame.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=1\textwidth]{figs/esquema.pdf}
+\caption{Sistema proposto}
+\label{fig:esquema}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.5\textwidth]{figs/ECG.pdf}
+\caption{Sinal com ruido}
+\label{fig:ruido}
+\end{figure}
+
+\subsection{Arquivos}
+
+Os seguintes arquivos são fornecidos:
+
+\begin{itemize}
+	\item \textbf{ecg-modelo-hil.mdl :} Modelo do simulink do ECG para HIL;
+	
+	\begin{itemize}
+		\item  A porta utilizada é a \textit{DAC 0}
+	\end{itemize}
+	
+ 	\item \textbf{ecg-modelo.mdl :} Modelo no simulink para simulação e com proposta de filtro FIR;
+	 
+	\item \textbf{ecg-dado.mat :} Workspace do matlab que contém as variáveis utilizadas de inicialização da simulação
+	
+	\item Variáveis importantes:
+	\begin{itemize}
+		\item \textbf{ecg\_clean :} ECG sem ruído
+		\item \textbf{ecg\_noise :} ECG com ruído
+		\item \textbf{ecg\_iir :} 	ECG filtrado
+		\item \textbf{Ts :}			Taxa de amostragem
+	\end{itemize}
+	
+	\item \textbf{ecg-main.m :} Script para inicialização e analise do ECG; 
+	
+	\item \textbf{filtro.c :} Template em \textit{C} para implementação de um filtro FIR;
+	\item\textbf{filtro.h :} Parâmetros do filtro.
+	
+\end{itemize}
+
+\subsection{Etapas Matlab} \label{etapa:matlab}
+
+\begin{enumerate}
+\item Executar o script principal e verificar a simulação no simulink.  (\textbf{ecg-main.m}).
+
+\item Gerar dois gráficos temporais, um para o sinal sem ruído (\textit{ecg\_clean}) e outro para o sinal com ruído (\textit{ecg\_noise})
+	
+\item Plotar o espectro dos sinais (Fourier), analisando sua composição.
+
+\item Execute o modelo \textbf{ecg-modelo-hil.mdl}, e com a ajuda de um osciloscópio, verifique se o sinal analógico é similar ao plotado anteriormente.
+
+\item Projetar um filtro IIR para o tratarmos o sinal ruidoso; verificar sua eficiência no modelo (\textbf{ecg-modelo.mdl}). Utilize nessa etapa a ferramenta do Matlab: \textit{Filter Design \& Analysis}
+
+		\begin{itemize}
+			\item Qual a diferença entre FIR e IIR?
+			\item Pensando já na etapa embarcada, qual o melhor formato de varáveis a trabalhar ? (int, float, \ldots) e qual o efeito do truncamento na resposta do filtro ? Podemos usar um filtro com ordem muito grande ?
+			\item Qual o impacto da frequência de amostragem na ordem do filtro ?
+		\end{itemize}
+
+	\item Implemente o filtro projetado no simulador 
+		\begin{itemize}
+			\item houve variação significativa na forma do sinal ?
+		\end{itemize}
+	
+	\item Plote os gráficos do sinal filtrado (temporal e frequência)
+
+\end{enumerate}
+
+%\begin{enumerate}
+%	\item Executar a simulação e analisar os resultados (\textbf{ecg-main.m})
+%
+%	\item Plotar o espectro do sinal, analisando os ruídos  
+%			\begin{itemize}
+%				\item gráfico temporal do ECG com ruído
+%				\item Fourier dos sinais com e sem ruído
+%			\end{itemize} (\textbf{ecg-main.m})
+%	
+%	\item Projetar um filtro para o sistema e verificar sua eficiência no sinal do item 2 (\textbf{ecg-modelo.mdl}). 
+%		\begin{itemize}
+%			\item FIR ou IIR ?
+%			\item Pensando já na etapa embarcada, qual o melhor formato de varáveis a trabalhar ? (int, float, \ldots) e qual o efeito do truncamento na resposta do filtro ? Podemos usar um filtro com ordem muito grande ?
+%		\end{itemize}
+%	\item Discretizar o filtro \label{filtro:discreto}
+%\end{enumerate}
+
+\subsection{Etapas Embarcado}
+
+\begin{enumerate}
+	\item Coletar os dados analógicos (qual taxa de amostragem ?)
+	\item Enviar os dados coletados via serial (para debug)
+	\item Implementar o filtro desenvolvido em \ref{etapa:matlab} item \ref{filtro:discreto} (\textbf{filtro.c e filtro.h})
+	\item Detectar frequência cardíaca e plotar o dado no LCD;
+	\item Validar o resultado
+\end{enumerate}
+
+
+
+
+
+\end{document}

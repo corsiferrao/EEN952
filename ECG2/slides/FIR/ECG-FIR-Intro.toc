@@ -1,0 +1,7 @@
+\beamer@endinputifotherversion {3.24pt}
+\select@language {brazilian}
+\beamer@sectionintoc {1}{HIL}{3}{0}{1}
+\beamer@subsectionintoc {1}{1}{Introdu\IeC {\c c}\IeC {\~a}o}{4}{0}{1}
+\beamer@sectionintoc {2}{IIR}{5}{0}{2}
+\beamer@sectionintoc {3}{FIR}{8}{0}{3}
+\beamer@sectionintoc {4}{Matlab}{13}{0}{4}
