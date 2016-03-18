@@ -27,18 +27,6 @@ figure
 %% FFT do ECG sem ruído
 % implementar 
 
-figure;
-
-    L = 10000;
-    NFFT = 2^nextpow2(L);
-    f = Fs/2*linspace(0,1,NFFT/2+1);
-    Y = fft(dado.signals.values(1:NFFT))/L;
-
-    stem(f,abs(Y(1:NFFT/2 + 1)));
-    title('ECG Spectrum clean')
-    xlabel('Frequency (Hz)')
-    ylabel('|ECG|')
-
 
 %% Executa simulação
 ecg_modelo;
@@ -53,39 +41,13 @@ title('ECG com ruído')
 %% FFT do ECG com ruído
 % implementar 
 
-figure;
-
-    L = 10000;
-    NFFT = 2^nextpow2(L);
-    f = Fs/2*linspace(0,1,NFFT/2+1);
-    Y = fft(ecg_noise(1:NFFT))/L;
-
-    stem(f,abs(Y(1:NFFT/2 + 1)));
-    title('ECG Spectrum')
-    xlabel('Frequency (Hz)')
-    ylabel('|ECG|')
-
 %% Plota gráfico do ECG filtrado
 % implementar
 
-figure
-plot(ecg_fir(:,2),ecg_fir(:,1))
-title('ECG com ruído e filtrado')
 
 %% FFT do ECG com ruído filtrado
 % implementar 
 
-figure;
-
-    L = 10000;
-    NFFT = 2^nextpow2(L);
-    f = Fs/2*linspace(0,1,NFFT/2+1);
-    Y = fft(ecg_fir(1:NFFT))/L;
-
-    stem(f,abs(Y(1:NFFT/2 + 1)));
-    title('ECG Spectrum')
-    xlabel('Frequency (Hz)')
-    ylabel('|ECG|')
    
 %% ------------------------------- parte 2
 % Executa HIL
